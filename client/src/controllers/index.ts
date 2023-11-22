@@ -4,12 +4,11 @@ import type { Definition } from '@hotwired/stimulus';
 import { ActionController } from './ActionController';
 import { AutosizeController } from './AutosizeController';
 import { BulkController } from './BulkController';
-import { CloneController } from './CloneController';
 import { CountController } from './CountController';
 import { DialogController } from './DialogController';
 import { DismissibleController } from './DismissibleController';
 import { DropdownController } from './DropdownController';
-import { InitController } from './InitController';
+import { CloneController } from './CloneController';
 import { ProgressController } from './ProgressController';
 import { RevealController } from './RevealController';
 import { SkipLinkController } from './SkipLinkController';
@@ -36,7 +35,6 @@ export const coreControllerDefinitions: Definition[] = [
   { controllerConstructor: DialogController, identifier: 'w-dialog' },
   { controllerConstructor: DismissibleController, identifier: 'w-dismissible' },
   { controllerConstructor: DropdownController, identifier: 'w-dropdown' },
-  { controllerConstructor: InitController, identifier: 'w-init' },
   { controllerConstructor: ProgressController, identifier: 'w-progress' },
   { controllerConstructor: RevealController, identifier: 'w-breadcrumbs' },
   { controllerConstructor: RevealController, identifier: 'w-reveal' },

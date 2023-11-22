@@ -146,12 +146,10 @@ class CharBlock(FieldBlock):
         max_length=None,
         min_length=None,
         validators=(),
-        search_index=True,
         **kwargs,
     ):
         # CharField's 'label' and 'initial' parameters are not exposed, as Block handles that functionality natively
         # (via 'label' and 'default')
-        self.search_index = search_index
         self.field = forms.CharField(
             required=required,
             help_text=help_text,
@@ -162,7 +160,7 @@ class CharBlock(FieldBlock):
         super().__init__(**kwargs)
 
     def get_searchable_content(self, value):
-        return [force_str(value)] if self.search_index else []
+        return [force_str(value)]
 
 
 class TextBlock(FieldBlock):
@@ -173,7 +171,6 @@ class TextBlock(FieldBlock):
         rows=1,
         max_length=None,
         min_length=None,
-        search_index=True,
         validators=(),
         **kwargs,
     ):
@@ -185,7 +182,6 @@ class TextBlock(FieldBlock):
             "validators": validators,
         }
         self.rows = rows
-        self.search_index = search_index
         super().__init__(**kwargs)
 
     @cached_property
@@ -197,7 +193,7 @@ class TextBlock(FieldBlock):
         return forms.CharField(**field_kwargs)
 
     def get_searchable_content(self, value):
-        return [force_str(value)] if self.search_index else []
+        return [force_str(value)]
 
     class Meta:
         icon = "pilcrow"
@@ -486,7 +482,6 @@ class BaseChoiceBlock(FieldBlock):
         default=None,
         required=True,
         help_text=None,
-        search_index=True,
         widget=None,
         validators=(),
         **kwargs,
@@ -494,7 +489,6 @@ class BaseChoiceBlock(FieldBlock):
 
         self._required = required
         self._default = default
-        self.search_index = search_index
 
         if choices is None:
             # no choices specified, so pick up the choice defined at the class level
@@ -605,8 +599,6 @@ class ChoiceBlock(BaseChoiceBlock):
 
     def get_searchable_content(self, value):
         # Return the display value as the searchable value
-        if not self.search_index:
-            return []
         text_value = force_str(value)
         for k, v in self.field.choices:
             if isinstance(v, (list, tuple)):
@@ -641,8 +633,6 @@ class MultipleChoiceBlock(BaseChoiceBlock):
 
     def get_searchable_content(self, value):
         # Return the display value as the searchable value
-        if not self.search_index:
-            return []
         content = []
         text_value = force_str(value)
         for k, v in self.field.choices:
@@ -667,7 +657,6 @@ class RichTextBlock(FieldBlock):
         features=None,
         max_length=None,
         validators=(),
-        search_index=True,
         **kwargs,
     ):
         if max_length is not None:
@@ -681,7 +670,6 @@ class RichTextBlock(FieldBlock):
         }
         self.editor = editor
         self.features = features
-        self.search_index = search_index
         super().__init__(**kwargs)
 
     def get_default(self):
@@ -719,10 +707,8 @@ class RichTextBlock(FieldBlock):
         return RichText(value)
 
     def get_searchable_content(self, value):
-        if not self.search_index:
-            return []
-        source = force_str(value.source)
         # Strip HTML tags to prevent search backend from indexing them
+        source = force_str(value.source)
         return [get_text_for_indexing(source)]
 
     def extract_references(self, value):

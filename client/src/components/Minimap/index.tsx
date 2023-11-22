@@ -110,12 +110,6 @@ export const initMinimap = (
   if (!container) {
     return;
   }
-  const anchors = document.body.querySelectorAll<HTMLAnchorElement>(
-    '[data-panel-anchor]',
-  );
-  if (!anchors.length) {
-    return;
-  }
 
   const updateMinimap = debounce(renderMinimap.bind(null, container), 100);
 

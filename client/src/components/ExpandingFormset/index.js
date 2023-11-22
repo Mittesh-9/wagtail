@@ -23,7 +23,7 @@ export class ExpandingFormset {
     } else if (emptyFormElement instanceof HTMLScriptElement) {
       /**
        * Support legacy `<script type="text/django-form-template">` until removed
-       * @deprecated RemovedInWagtail70
+       * @deprecated RemovedInWagtail60
        */
       this.emptyFormTemplate =
         emptyFormElement.innerText || emptyFormElement.textContent;
@@ -44,7 +44,7 @@ export class ExpandingFormset {
       .replace(/__prefix__(.*?['"])/g, formIndex + '$1')
       /**
        * Replace inner escaped `<script>...<-/script>` tags with `<script>` tags
-       * @deprecated RemovedInWagtail70
+       * @deprecated RemovedInWagtail60
        */
       .replace(/<-(-*)\/script>/g, '<$1/script>');
 

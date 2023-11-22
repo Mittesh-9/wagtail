@@ -27,6 +27,7 @@ from wagtail.test.testapp.models import (
 )
 from wagtail.test.utils import WagtailTestUtils
 from wagtail.test.utils.timestamps import submittable_timestamp
+from wagtail.utils.deprecation import RemovedInWagtail60Warning
 
 
 class TestPageCreation(WagtailTestUtils, TestCase):
@@ -1227,6 +1228,27 @@ class TestPageCreation(WagtailTestUtils, TestCase):
             "Submit for moderation</button>",
         )
 
+    @override_settings(WAGTAIL_MODERATION_ENABLED=False)
+    def test_legacy_hide_moderation_button(self):
+        """
+        Tests that if WAGTAIL_MODERATION_ENABLED is set to False, the "Submit for Moderation" button is not shown.
+        """
+        # RemovedInWagtail60Warning: Remove this test in favour of test_hide_moderation_button
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "WAGTAIL_MODERATION_ENABLED is deprecated. Use WAGTAIL_WORKFLOW_ENABLED instead.",
+        ):
+            response = self.client.get(
+                reverse(
+                    "wagtailadmin_pages:add",
+                    args=("tests", "simplepage", self.root_page.id),
+                )
+            )
+        self.assertNotContains(
+            response,
+            '<button type="submit" name="action-submit" value="Submit for moderation" class="button">Submit for moderation</button>',
+        )
+
     @override_settings(WAGTAIL_WORKFLOW_ENABLED=False)
     def test_hide_moderation_button(self):
         """
@@ -1721,7 +1743,6 @@ class TestLocaleSelectorOnRootPage(WagtailTestUtils, TestCase):
 
         self.assertContains(response, 'id="status-sidebar-english"')
 
-        # Should show a link to switch to another locale
         add_translation_url = (
             reverse(
                 "wagtailadmin_pages:add",
@@ -1730,50 +1751,6 @@ class TestLocaleSelectorOnRootPage(WagtailTestUtils, TestCase):
             + "?locale=fr"
         )
         self.assertContains(response, f'href="{add_translation_url}"')
-
-        # Should not show a link to switch to the current locale
-        self_translation_url = (
-            reverse(
-                "wagtailadmin_pages:add",
-                args=["demosite", "homepage", self.root_page.id],
-            )
-            + "?locale=en"
-        )
-        self.assertNotContains(response, f'href="{self_translation_url}"')
-
-    def test_locale_selector_selected(self):
-        response = self.client.get(
-            reverse(
-                "wagtailadmin_pages:add",
-                args=["demosite", "homepage", self.root_page.id],
-            )
-            + "?locale=fr"
-        )
-
-        self.assertContains(response, 'id="status-sidebar-french"')
-
-        # Should render the locale input with the currently selected locale
-        self.assertContains(response, '<input type="hidden" name="locale" value="fr">')
-
-        # Should show a link to switch to another locale
-        add_translation_url = (
-            reverse(
-                "wagtailadmin_pages:add",
-                args=["demosite", "homepage", self.root_page.id],
-            )
-            + "?locale=en"
-        )
-        self.assertContains(response, f'href="{add_translation_url}"')
-
-        # Should not show a link to switch to the current locale
-        self_translation_url = (
-            reverse(
-                "wagtailadmin_pages:add",
-                args=["demosite", "homepage", self.root_page.id],
-            )
-            + "?locale=fr"
-        )
-        self.assertNotContains(response, f'href="{self_translation_url}"')
 
     @override_settings(WAGTAIL_I18N_ENABLED=False)
     def test_locale_selector_not_present_when_i18n_disabled(self):

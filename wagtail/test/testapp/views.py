@@ -24,7 +24,6 @@ from wagtail.test.testapp.models import (
     JSONMinMaxCountStreamModel,
     JSONStreamModel,
     ModelWithStringTypePrimaryKey,
-    SearchTestModel,
 )
 
 
@@ -177,7 +176,7 @@ class JSONMinMaxCountStreamModelViewSet(ModelViewSet):
     url_prefix = "minmaxcount-streammodel"
     model = JSONMinMaxCountStreamModel
     form_fields = ("body",)
-    icon = "rotate"
+    icon = "reset"
     menu_label = "JSON MinMaxCount StreamModel"
 
 
@@ -195,12 +194,6 @@ class JSONModelViewSetGroup(ModelViewSetGroup):
             menu_label="JSON BlockCounts StreamModel",
         ),
     )
-
-
-class SearchTestModelViewSet(ModelViewSet):
-    model = SearchTestModel
-    search_fields = ["title", "body"]
-    form_fields = ["title", "body"]
 
 
 class FeatureCompleteToyViewSet(ModelViewSet):

@@ -20,7 +20,10 @@ class TestSiteIndexView(AdminTemplateTestUtils, WagtailTestUtils, TestCase):
         response = self.get()
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "wagtailadmin/generic/index.html")
-        self.assertBreadcrumbsNotRendered(response.content)
+        self.assertBreadcrumbsItemsRendered(
+            [{"url": "", "label": "Sites"}],
+            response.content,
+        )
 
 
 class TestSiteCreateView(AdminTemplateTestUtils, WagtailTestUtils, TestCase):
@@ -57,7 +60,13 @@ class TestSiteCreateView(AdminTemplateTestUtils, WagtailTestUtils, TestCase):
         response = self.get()
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "wagtailsites/create.html")
-        self.assertBreadcrumbsNotRendered(response.content)
+        self.assertBreadcrumbsItemsRendered(
+            [
+                {"label": "Sites", "url": "/admin/sites/"},
+                {"label": "New: Site", "url": ""},
+            ],
+            response.content,
+        )
 
     def test_create(self):
         response = self.post(
@@ -197,7 +206,13 @@ class TestSiteEditView(AdminTemplateTestUtils, WagtailTestUtils, TestCase):
         response = self.get()
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "wagtailsites/edit.html")
-        self.assertBreadcrumbsNotRendered(response.content)
+        self.assertBreadcrumbsItemsRendered(
+            [
+                {"url": "/admin/sites/", "label": "Sites"},
+                {"url": "", "label": str(self.localhost)},
+            ],
+            response.content,
+        )
 
         url_finder = AdminURLFinder(self.user)
         expected_url = "/admin/sites/edit/%d/" % self.localhost.id

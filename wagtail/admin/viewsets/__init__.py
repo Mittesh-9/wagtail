@@ -11,11 +11,7 @@ class ViewSetRegistry:
     def populate(self):
         for fn in hooks.get_hooks("register_admin_viewset"):
             viewset = fn()
-            if isinstance(viewset, (list, tuple)):
-                for vs in viewset:
-                    self.register(vs)
-            else:
-                self.register(viewset)
+            self.register(viewset)
 
     def register(self, viewset):
         # Allow registering a ViewSetGroup, which will register all of its

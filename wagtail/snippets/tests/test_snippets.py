@@ -61,7 +61,6 @@ from wagtail.test.testapp.models import (
     AdvertWithTabbedInterface,
     DraftStateCustomPrimaryKeyModel,
     DraftStateModel,
-    FullFeaturedSnippet,
     MultiPreviewModesModel,
     RevisableChildModel,
     RevisableModel,
@@ -72,7 +71,7 @@ from wagtail.test.testapp.models import (
 from wagtail.test.utils import WagtailTestUtils
 from wagtail.test.utils.template_tests import AdminTemplateTestUtils
 from wagtail.test.utils.timestamps import submittable_timestamp
-from wagtail.utils.deprecation import RemovedInWagtail70Warning
+from wagtail.utils.deprecation import RemovedInWagtail60Warning
 from wagtail.utils.timestamps import render_timestamp
 
 
@@ -287,7 +286,7 @@ class TestSnippetListView(WagtailTestUtils, TestCase):
             "construct_snippet_listing_buttons",
             register_snippet_listing_button_item,
         ), self.assertWarnsMessage(
-            RemovedInWagtail70Warning,
+            RemovedInWagtail60Warning,
             "construct_snippet_listing_buttons hook no longer accepts a context argument",
         ):
             response = self.get()
@@ -438,13 +437,13 @@ class TestListViewOrdering(WagtailTestUtils, TestCase):
         # The Updated column header should be a link with the correct query param
         self.assertContains(
             response,
-            f'<th><a href="{sort_updated_url}" title="Sort by &#x27;Updated&#x27; in ascending order." class="icon icon-arrow-down-after label">Updated</a></th>',
+            f'<th><a href="{sort_updated_url}" title="Sort by &#x27;Updated&#x27; in ascending order." class="icon icon-arrow-down-after">Updated</a></th>',
             html=True,
         )
         # Should not contain the Status column header
         self.assertNotContains(
             response,
-            f'<th><a href="{sort_live_url}" title="Sort by &#x27;Status&#x27; in ascending order." class="icon icon-arrow-down-after label">Status</a></th>',
+            f'<th><a href="{sort_live_url}" title="Sort by &#x27;Status&#x27; in ascending order." class="icon icon-arrow-down-after">Status</a></th>',
             html=True,
         )
 
@@ -460,13 +459,13 @@ class TestListViewOrdering(WagtailTestUtils, TestCase):
         # The Updated column header should be a link with the correct query param
         self.assertContains(
             response,
-            f'<th><a href="{sort_updated_url}" title="Sort by &#x27;Updated&#x27; in ascending order." class="icon icon-arrow-down-after label">Updated</a></th>',
+            f'<th><a href="{sort_updated_url}" title="Sort by &#x27;Updated&#x27; in ascending order." class="icon icon-arrow-down-after">Updated</a></th>',
             html=True,
         )
         # The Status column header should be a link with the correct query param
         self.assertContains(
             response,
-            f'<th><a href="{sort_live_url}" title="Sort by &#x27;Status&#x27; in ascending order." class="icon icon-arrow-down-after label">Status</a></th>',
+            f'<th><a href="{sort_live_url}" title="Sort by &#x27;Status&#x27; in ascending order." class="icon icon-arrow-down-after">Status</a></th>',
             html=True,
         )
 
@@ -4118,10 +4117,10 @@ class TestSnippetHistory(WagtailTestUtils, TestCase):
             timestamp=make_aware(datetime.datetime(2022, 5, 10, 12, 34, 0)),
             object_id="1",
         )
-        self.revisable_snippet = FullFeaturedSnippet.objects.create(text="Foo")
+        self.revisable_snippet = RevisableModel.objects.create(text="Foo")
         self.initial_revision = self.revisable_snippet.save_revision(user=self.user)
         ModelLogEntry.objects.create(
-            content_type=ContentType.objects.get_for_model(FullFeaturedSnippet),
+            content_type=ContentType.objects.get_for_model(RevisableModel),
             label="Foo",
             action="wagtail.create",
             timestamp=make_aware(datetime.datetime(2022, 5, 10, 20, 22, 0)),
@@ -4227,8 +4226,6 @@ class TestSnippetHistory(WagtailTestUtils, TestCase):
     @override_settings(WAGTAIL_I18N_ENABLED=True)
     def test_get_with_i18n_enabled(self):
         response = self.get(self.non_revisable_snippet)
-        self.assertEqual(response.status_code, 200)
-        response = self.get(self.revisable_snippet)
         self.assertEqual(response.status_code, 200)
 
 
@@ -5377,7 +5374,7 @@ class TestSnippetViewWithCustomPrimaryKey(WagtailTestUtils, TestCase):
 
     def test_redirect_to_edit(self):
         with self.assertWarnsRegex(
-            RemovedInWagtail70Warning,
+            RemovedInWagtail60Warning,
             "`/<pk>/` edit view URL pattern has been deprecated in favour of /edit/<pk>/.",
         ):
             response = self.client.get(
@@ -5391,7 +5388,7 @@ class TestSnippetViewWithCustomPrimaryKey(WagtailTestUtils, TestCase):
 
     def test_redirect_to_delete(self):
         with self.assertWarnsRegex(
-            RemovedInWagtail70Warning,
+            RemovedInWagtail60Warning,
             "`/<pk>/delete/` delete view URL pattern has been deprecated in favour of /delete/<pk>/.",
         ):
             response = self.client.get(
@@ -5405,7 +5402,7 @@ class TestSnippetViewWithCustomPrimaryKey(WagtailTestUtils, TestCase):
 
     def test_redirect_to_usage(self):
         with self.assertWarnsRegex(
-            RemovedInWagtail70Warning,
+            RemovedInWagtail60Warning,
             "`/<pk>/usage/` usage view URL pattern has been deprecated in favour of /usage/<pk>/.",
         ):
             response = self.client.get(

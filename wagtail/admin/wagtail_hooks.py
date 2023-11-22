@@ -222,12 +222,12 @@ def register_workflow_tasks_menu_item():
 
 
 @hooks.register("register_page_listing_buttons")
-def page_listing_buttons(page, user, next_url=None):
+def page_listing_buttons(page, page_perms, next_url=None):
     yield ButtonWithDropdownFromHook(
         "",
         hook_name="register_page_listing_more_buttons",
         page=page,
-        user=user,
+        page_perms=page_perms,
         next_url=next_url,
         icon_name="dots-horizontal",
         attrs={
@@ -374,39 +374,124 @@ class PageListingSortMenuOrderButton(PageListingButton):
 
 
 @hooks.register("register_page_listing_more_buttons")
-def page_listing_more_buttons(page, user, next_url=None):
-    yield PageListingEditButton(page=page, user=user, next_url=next_url, priority=2)
-    yield PageListingViewDraftButton(page=page, user=user, priority=4)
-    yield PageListingViewLiveButton(page=page, user=user, url=page.url, priority=6)
+def page_listing_more_buttons(page, page_perms, next_url=None):
+    yield PageListingEditButton(
+        page=page,
+        page_perms=page_perms,
+        priority=2,
+    )
+
+    yield PageListingViewDraftButton(
+        page=page,
+        page_perms=page_perms,
+        priority=4,
+    )
+
+    yield PageListingViewLiveButton(
+        page=page,
+        page_perms=page_perms,
+        url=page.url,
+        priority=6,
+    )
+
     yield PageListingAddChildPageButton(
-        page=page, user=user, next_url=next_url, priority=8
+        page=page,
+        page_perms=page_perms,
+        priority=8,
     )
-    yield PageListingMoveButton(page=page, user=user, priority=10)
-    yield PageListingCopyButton(page=page, user=user, next_url=next_url, priority=20)
-    yield PageListingDeleteButton(page=page, user=user, next_url=next_url, priority=30)
+
+    yield PageListingMoveButton(
+        page=page,
+        page_perms=page_perms,
+        priority=10,
+    )
+
+    yield PageListingCopyButton(
+        page=page,
+        page_perms=page_perms,
+        next_url=next_url,
+        priority=20,
+    )
+
+    yield PageListingDeleteButton(
+        page=page,
+        page_perms=page_perms,
+        next_url=next_url,
+        priority=30,
+    )
+
     yield PageListingUnpublishButton(
-        page=page, user=user, next_url=next_url, priority=40
+        page=page,
+        page_perms=page_perms,
+        next_url=next_url,
+        priority=40,
     )
-    yield PageListingHistoryButton(page=page, user=user, priority=50)
-    yield PageListingSortMenuOrderButton(page=page, user=user, priority=60)
+
+    yield PageListingHistoryButton(
+        page=page,
+        page_perms=page_perms,
+        priority=50,
+    )
+
+    yield PageListingSortMenuOrderButton(
+        page=page,
+        page_perms=page_perms,
+        priority=60,
+    )
 
 
 @hooks.register("register_page_header_buttons")
-def page_header_buttons(page, user, view_name, next_url=None):
-    yield PageListingEditButton(page=page, user=user, priority=10)
-
-    # "add child" is a separate primary action on the index page
-    if view_name != "index":
-        yield PageListingAddChildPageButton(page=page, user=user, priority=15)
-
-    yield PageListingMoveButton(page=page, user=user, priority=20)
-    yield PageListingCopyButton(page=page, user=user, next_url=next_url, priority=30)
-    yield PageListingDeleteButton(page=page, user=user, next_url=next_url, priority=50)
-    yield PageListingUnpublishButton(
-        page=page, user=user, next_url=next_url, priority=60
+def page_header_buttons(page, page_perms, next_url=None):
+    yield PageListingEditButton(
+        page=page,
+        page_perms=page_perms,
+        priority=10,
     )
-    yield PageListingHistoryButton(page=page, user=user, priority=65)
-    yield PageListingSortMenuOrderButton(page=page, user=user, priority=70)
+
+    yield PageListingAddChildPageButton(
+        page=page,
+        page_perms=page_perms,
+        priority=15,
+    )
+
+    yield PageListingMoveButton(
+        page=page,
+        page_perms=page_perms,
+        priority=20,
+    )
+
+    yield PageListingCopyButton(
+        page=page,
+        page_perms=page_perms,
+        next_url=next_url,
+        priority=30,
+    )
+
+    yield PageListingDeleteButton(
+        page=page,
+        page_perms=page_perms,
+        next_url=next_url,
+        priority=50,
+    )
+
+    yield PageListingUnpublishButton(
+        page=page,
+        page_perms=page_perms,
+        next_url=next_url,
+        priority=60,
+    )
+
+    yield PageListingHistoryButton(
+        page=page,
+        page_perms=page_perms,
+        priority=65,
+    )
+
+    yield PageListingSortMenuOrderButton(
+        page=page,
+        page_perms=page_perms,
+        priority=70,
+    )
 
 
 @hooks.register("register_admin_urls")
@@ -934,7 +1019,7 @@ def register_reports_menu():
 
 @hooks.register("register_help_menu_item")
 def register_whats_new_in_wagtail_version_menu_item():
-    version = "6.0"
+    version = "5.2"
     return DismissibleMenuItem(
         _("What's new in Wagtail %(version)s") % {"version": version},
         wagtail_feature_release_whats_new_link(),
@@ -971,11 +1056,14 @@ def register_help_menu():
 @hooks.register("register_icons")
 def register_icons(icons):
     for icon in [
+        "angle-double-left.svg",
+        "angle-double-right.svg",
         "arrow-down.svg",
         "arrow-right-full.svg",
         "arrow-left.svg",
         "arrow-right.svg",
         "arrow-up.svg",
+        "arrows-up-down.svg",
         "bars.svg",
         "bin.svg",
         "bold.svg",
@@ -983,6 +1071,7 @@ def register_icons(icons):
         "calendar.svg",
         "calendar-alt.svg",
         "calendar-check.svg",
+        "chain-broken.svg",
         "check.svg",
         "circle-check.svg",
         "circle-plus.svg",
@@ -1007,10 +1096,12 @@ def register_icons(icons):
         "doc-empty.svg",
         "doc-full-inverse.svg",
         "doc-full.svg",  # aka file-text-alt
+        "dots-vertical.svg",
         "dots-horizontal.svg",
         "download.svg",
         "draft.svg",
         "edit.svg",
+        "ellipsis-v.svg",
         "expand-right.svg",
         "error.svg",
         "folder-inverse.svg",
@@ -1030,6 +1121,7 @@ def register_icons(icons):
         "help.svg",
         "history.svg",
         "home.svg",
+        "horizontalrule.svg",
         "image.svg",  # aka picture
         "info-circle.svg",
         "italic.svg",
@@ -1061,6 +1153,8 @@ def register_icons(icons):
         "radio-full.svg",
         "redirect.svg",
         "regex.svg",
+        "repeat.svg",
+        "reset.svg",
         "resubmit.svg",
         "rotate.svg",
         "search.svg",
@@ -1080,9 +1174,11 @@ def register_icons(icons):
         "tick-inverse.svg",
         "time.svg",
         "title.svg",
+        "undo.svg",
         "upload.svg",
         "user.svg",
         "view.svg",
+        "wagtail-inverse.svg",
         "wagtail.svg",
         "warning.svg",
     ]:

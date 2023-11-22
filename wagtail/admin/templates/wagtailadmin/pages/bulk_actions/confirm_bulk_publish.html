@@ -4,7 +4,8 @@
 {% block titletag %}{% blocktrans trimmed count counter=items|length %}Publish 1 page {% plural %}Publish {{ counter }} pages{% endblocktrans %}{% endblock %}
 
 {% block header %}
-    {% include "wagtailadmin/shared/header.html" with title=_("Publish") icon="doc-empty-inverse" %}
+    {% trans "Publish" as publish_str %}
+    {% include "wagtailadmin/shared/header.html" with title=publish_str icon="doc-empty-inverse" %}
 {% endblock header %}
 
 {% block items_with_access %}

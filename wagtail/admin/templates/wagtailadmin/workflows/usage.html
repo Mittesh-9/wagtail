@@ -2,7 +2,8 @@
 {% load i18n %}
 {% block titletag %}{% blocktrans trimmed with name=workflow.name %}Pages that use workflow '{{ name }}'{% endblocktrans %}{% endblock %}
 {% block content %}
-    {% include "wagtailadmin/shared/header.html" with title=_("Pages that use workflow") subtitle=workflow.name %}
+    {% trans "Pages that use workflow" as usage_str %}
+    {% include "wagtailadmin/shared/header.html" with title=usage_str subtitle=workflow.name %}
 
     <div class="nice-padding">
         <table class="listing">

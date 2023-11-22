@@ -66,6 +66,10 @@ class TestWagtailHooksPermission(Utils):
 
 
 class TestWagtailHooksButtons(Utils):
+    class PagePerms:
+        def __init__(self, user):
+            self.user = user
+
     def test_page_listing_more_buttons(self):
         # Root, no button
         root_page = self.en_blog_index.get_root()
@@ -74,11 +78,11 @@ class TestWagtailHooksButtons(Utils):
             user = get_user_model().objects.create_user(email="jos@example.com")
         else:
             user = get_user_model().objects.create_user(username="jos")
-        assert list(page_listing_more_buttons(root_page, user)) == []
+        assert list(page_listing_more_buttons(root_page, self.PagePerms(user))) == []
 
         # No permissions, no button
         home_page = self.en_homepage
-        assert list(page_listing_more_buttons(root_page, user)) == []
+        assert list(page_listing_more_buttons(root_page, self.PagePerms(user))) == []
 
         # Homepage is translated to all languages, no button
         perm = Permission.objects.get(codename="submit_translation")
@@ -92,12 +96,13 @@ class TestWagtailHooksButtons(Utils):
         user.user_permissions.add(perm)
         group = Group.objects.get(name="Editors")
         user.groups.add(group)
-        assert list(page_listing_more_buttons(home_page, user)) == []
+        page_perms = self.PagePerms(user)
+        assert list(page_listing_more_buttons(home_page, page_perms)) == []
 
         # Page does not have translations yet... button!
         blog_page = self.en_blog_post
         assert isinstance(
-            list(page_listing_more_buttons(blog_page, user))[0],
+            list(page_listing_more_buttons(blog_page, page_perms))[0],
             wagtailadmin_widgets.Button,
         )
 

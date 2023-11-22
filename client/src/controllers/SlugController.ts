@@ -1,6 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import { slugify } from '../utils/slugify';
-import { urlify } from '../utils/urlify';
+import { cleanForSlug } from '../utils/text';
 
 type SlugMethods = 'slugify' | 'urlify';
 
@@ -65,7 +64,7 @@ export class SlugController extends Controller<HTMLInputElement> {
   ) {
     const unicodeSlugsEnabled = this.allowUnicodeValue;
     const { value = this.element.value } = event?.detail || {};
-    const newValue = slugify(value.trim(), { unicodeSlugsEnabled });
+    const newValue = cleanForSlug(value.trim(), false, { unicodeSlugsEnabled });
 
     if (!ignoreUpdate) {
       this.element.value = newValue;
@@ -86,7 +85,7 @@ export class SlugController extends Controller<HTMLInputElement> {
   ) {
     const unicodeSlugsEnabled = this.allowUnicodeValue;
     const { value = this.element.value } = event?.detail || {};
-    const newValue = urlify(value.trim(), { unicodeSlugsEnabled });
+    const newValue = cleanForSlug(value.trim(), true, { unicodeSlugsEnabled });
 
     if (!ignoreUpdate) {
       this.element.value = newValue;

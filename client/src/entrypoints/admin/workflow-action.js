@@ -22,6 +22,7 @@ function ActivateWorkflowActionsForDashboard(csrfToken) {
       (e) => {
         // Stop the button from submitting the form
         e.preventDefault();
+        e.stopPropagation();
 
         if ('launchModal' in buttonElement.dataset) {
           // eslint-disable-next-line no-undef

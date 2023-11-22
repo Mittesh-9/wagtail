@@ -35,7 +35,6 @@ from wagtail.test.testapp.models import (
 from wagtail.test.testapp.views import (
     JSONModelViewSetGroup,
     MiscellaneousViewSetGroup,
-    SearchTestModelViewSet,
     ToyViewSetGroup,
     animated_advert_chooser_viewset,
 )
@@ -190,6 +189,16 @@ def register_relax_menu_item(menu_items, request, context):
     menu_items.append(RelaxMenuItem())
 
 
+@hooks.register("construct_page_listing_buttons")
+def register_page_listing_button_item(buttons, page, page_perms, context=None):
+    item = Button(
+        label="Dummy Button",
+        url="/dummy-button",
+        priority=10,
+    )
+    buttons.append(item)
+
+
 @hooks.register("construct_snippet_listing_buttons")
 def register_snippet_listing_button_item(buttons, snippet, user, context=None):
     item = Button(
@@ -243,11 +252,12 @@ def add_broken_links_summary_item(request, items):
 
 @hooks.register("register_admin_viewset")
 def register_viewsets():
-    return [
-        MiscellaneousViewSetGroup(),
-        JSONModelViewSetGroup(),
-        SearchTestModelViewSet(name="searchtest"),
-    ]
+    return MiscellaneousViewSetGroup()
+
+
+@hooks.register("register_admin_viewset")
+def register_json_model_viewsets():
+    return JSONModelViewSetGroup()
 
 
 @hooks.register("register_admin_viewset")

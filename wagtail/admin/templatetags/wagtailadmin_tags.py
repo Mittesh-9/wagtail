@@ -41,7 +41,6 @@ from wagtail.admin.utils import (
 from wagtail.admin.views.bulk_action.registry import bulk_action_registry
 from wagtail.admin.widgets import Button, ButtonWithDropdown, PageListingButton
 from wagtail.coreutils import (
-    accepts_kwarg,
     camelcase_to_underscore,
     escape_script,
     get_content_type_label,
@@ -53,11 +52,12 @@ from wagtail.models import (
     Locale,
     Page,
     PageViewRestriction,
+    UserPagePermissionsProxy,
 )
 from wagtail.permission_policies.pages import PagePermissionPolicy
 from wagtail.telepath import JSContext
 from wagtail.users.utils import get_gravatar_url
-from wagtail.utils.deprecation import RemovedInWagtail70Warning
+from wagtail.utils.deprecation import RemovedInWagtail60Warning
 
 register = template.Library()
 
@@ -148,6 +148,18 @@ def widgettype(bound_field):
             return ""
 
 
+def _get_user_page_permissions(context):
+    # RemovedInWagtail60Warning: Remove this function
+
+    # Create a UserPagePermissionsProxy object to represent the user's global permissions, and
+    # cache it in the context for the duration of the page request, if one does not exist already
+    if "user_page_permissions" not in context:
+        context["user_page_permissions"] = UserPagePermissionsProxy(
+            context["request"].user
+        )
+    return context["user_page_permissions"]
+
+
 @register.simple_tag(takes_context=True)
 def page_permissions(context, page):
     """
@@ -155,6 +167,9 @@ def page_permissions(context, page):
     Sets the variable 'page_perms' to a PagePermissionTester object that can be queried to find out
     what actions the current logged-in user can perform on the given page.
     """
+    # RemovedInWagtail60Warning: Keep the UserPagePermissionsProxy object in the context
+    # for backwards compatibility during the deprecation period, even though we don't use it
+    _get_user_page_permissions(context)
     return page.permissions_for_user(context["request"].user)
 
 
@@ -275,6 +290,12 @@ def hook_output(hook_name):
     """
     snippets = [fn() for fn in hooks.get_hooks(hook_name)]
 
+    if hook_name == "insert_editor_css" and snippets:
+        warn(
+            "The `insert_editor_css` hook is deprecated - use `insert_global_admin_css` instead.",
+            category=RemovedInWagtail60Warning,
+        )
+
     return mark_safe("".join(snippets))
 
 
@@ -295,7 +316,7 @@ class EscapeScriptNode(template.Node):
         super().__init__()
         warn(
             "The `escapescript` template tag is deprecated - use `template` elements instead.",
-            category=RemovedInWagtail70Warning,
+            category=RemovedInWagtail60Warning,
         )
         self.nodelist = nodelist
 
@@ -441,40 +462,18 @@ def paginate(context, page, base_url="", page_key="p", classname=""):
 
 
 @register.inclusion_tag("wagtailadmin/shared/buttons.html", takes_context=True)
-def page_listing_buttons(context, page, user, next_url=None):
-    next_url = next_url or context["request"].path
+def page_listing_buttons(context, page, page_perms):
+    next_url = context["request"].path
     button_hooks = hooks.get_hooks("register_page_listing_buttons")
 
     buttons = []
     for hook in button_hooks:
-        if accepts_kwarg(hook, "user"):
-            buttons.extend(hook(page=page, next_url=next_url, user=user))
-        else:
-            # old-style hook that accepts page_perms instead of user
-            warn(
-                "`register_page_listing_buttons` hook functions should accept a `user` argument instead of `page_perms` -"
-                f" {hook.__module__}.{hook.__name__} needs to be updated",
-                category=RemovedInWagtail70Warning,
-            )
-
-            page_perms = page.permissions_for_user(user)
-            buttons.extend(hook(page, page_perms, next_url))
+        buttons.extend(hook(page, page_perms, next_url))
 
     buttons.sort()
 
     for hook in hooks.get_hooks("construct_page_listing_buttons"):
-        if accepts_kwarg(hook, "user"):
-            hook(buttons, page=page, user=user, context=context)
-        else:
-            # old-style hook that accepts page_perms instead of user
-            warn(
-                "`construct_page_listing_buttons` hook functions should accept a `user` argument instead of `page_perms` -"
-                f" {hook.__module__}.{hook.__name__} needs to be updated",
-                category=RemovedInWagtail70Warning,
-            )
-
-            page_perms = page.permissions_for_user(user)
-            hook(buttons, page, page_perms, context)
+        hook(buttons, page, page_perms, context)
 
     return {"page": page, "buttons": buttons}
 
@@ -482,27 +481,13 @@ def page_listing_buttons(context, page, user, next_url=None):
 @register.inclusion_tag(
     "wagtailadmin/pages/listing/_page_header_buttons.html", takes_context=True
 )
-def page_header_buttons(context, page, user, view_name):
+def page_header_buttons(context, page, page_perms):
     next_url = context["request"].path
-    page_perms = page.permissions_for_user(user)
     button_hooks = hooks.get_hooks("register_page_header_buttons")
 
     buttons = []
     for hook in button_hooks:
-        if accepts_kwarg(hook, "user"):
-            buttons.extend(
-                hook(page=page, user=user, next_url=next_url, view_name=view_name)
-            )
-        else:
-            # old-style hook that accepts page_perms instead of user
-            warn(
-                "`register_page_header_buttons` hook functions should accept a `user` argument instead of `page_perms` -"
-                f" {hook.__module__}.{hook.__name__} needs to be updated",
-                category=RemovedInWagtail70Warning,
-            )
-
-            page_perms = page.permissions_for_user(user)
-            buttons.extend(hook(page, page_perms, next_url))
+        buttons.extend(hook(page, page_perms, next_url))
 
     buttons = [b for b in buttons if b.show]
     buttons.sort()
@@ -533,7 +518,7 @@ def bulk_action_choices(context, app_label, model_name):
             )
             + "?"
             + urlencode({"next": next_url}),
-            attrs={"aria-label": action.aria_label, "data-bulk-action-button": ""},
+            attrs={"aria-label": action.aria_label},
             priority=action.action_priority,
             classname=" ".join(action.classes | {"bulk-action-btn"}),
         )
@@ -554,11 +539,9 @@ def bulk_action_choices(context, app_label, model_name):
                     )
                     + "?"
                     + urlencode({"next": next_url}),
-                    attrs={
-                        "aria-label": action.aria_label,
-                        "data-bulk-action-button": "",
-                    },
+                    attrs={"aria-label": action.aria_label},
                     priority=action.action_priority,
+                    classname="bulk-action-btn",
                 )
                 for action in bulk_action_more_list
             ],
@@ -678,7 +661,7 @@ def versioned_static(path):
 
 
 @register.inclusion_tag("wagtailadmin/shared/icon.html", takes_context=False)
-def icon(name=None, classname=None, title=None, wrapped=False):
+def icon(name=None, classname=None, title=None, wrapped=False, class_name=None):
     """
     Abstracts away the actual icon implementation.
 
@@ -695,9 +678,60 @@ def icon(name=None, classname=None, title=None, wrapped=False):
     if not name:
         raise ValueError("You must supply an icon name")
 
+    if class_name:
+        warn(
+            (
+                "Icon template tag `class_name` has been renamed to `classname`, please adopt the new usage instead. "
+                f'Replace `{{% icon ... class_name="{class_name}" %}}` with `{{% icon ... classname="{class_name}" %}}`'
+            ),
+            category=RemovedInWagtail60Warning,
+        )
+
+    deprecated_icons = [
+        "angle-double-left",
+        "angle-double-right",
+        "arrow-down-big",
+        "arrow-up-big",
+        "arrows-up-down",
+        "chain-broken",
+        "dots-vertical",
+        "ellipsis-v",
+        "horizontalrule",
+        "repeat",
+        "reset",
+        "undo",
+        "wagtail-inverse",
+    ]
+
+    if name in deprecated_icons:
+        warn(
+            (f"Icon `{name}` is deprecated and will be removed in a future release."),
+            category=RemovedInWagtail60Warning,
+        )
+
+    renamed_icons = {
+        "chevron-down": "arrow-down",
+        "download-alt": "download",
+        "duplicate": "copy",
+        "tick": "check",
+        "uni52": "folder-inverse",
+    }
+
+    if name in renamed_icons:
+        old_name = name
+        name = renamed_icons[name]
+        warn(
+            (
+                f"Icon `{old_name}` has been renamed to `{name}`, please adopt the new usage instead. "
+                f'Replace `{{% icon name="{old_name}" ... %}}` with `{{% icon name="{name}" ... %}}`'
+            ),
+            category=RemovedInWagtail60Warning,
+        )
+
     return {
         "name": name,
-        "classname": classname or "icon",
+        # supporting class_name for backwards compatibility
+        "classname": classname or class_name or "icon",
         "title": title,
         "wrapped": wrapped,
     }

@@ -204,6 +204,9 @@ function renderSidebarStory(
     return Promise.resolve();
   };
 
+  // Add ready class to body to enable CSS transitions
+  document.body.classList.add('ready');
+
   const onExpandCollapse = (collapsed: boolean) => {
     if (collapsed) {
       document.body.classList.add('sidebar-collapsed');

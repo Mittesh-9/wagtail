@@ -1,6 +1,5 @@
 import os
 
-from django import VERSION as DJANGO_VERSION
 from django.contrib.messages import constants as message_constants
 from django.utils.translation import gettext_lazy as _
 
@@ -71,10 +70,10 @@ if os.environ.get("STATICFILES_STORAGE", "") == "manifest":
         "BACKEND"
     ] = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
-    if DJANGO_VERSION < (4, 2):
-        STATICFILES_STORAGE = (
-            "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
-        )
+    # DJANGO_VERSION < 4.2
+    STATICFILES_STORAGE = (
+        "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+    )
 
 
 USE_TZ = not os.environ.get("DISABLE_TIMEZONE")
@@ -140,6 +139,7 @@ INSTALLED_APPS = [
     "wagtail.test.snippets",
     "wagtail.test.routablepage",
     "wagtail.test.search",
+    "wagtail.test.modeladmintest",
     "wagtail.test.i18n",
     "wagtail.test.streamfield_migrations",
     "wagtail.contrib.simple_translation",
@@ -148,6 +148,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.frontend_cache",
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.settings",
+    "wagtail.contrib.modeladmin",
     "wagtail.contrib.table_block",
     "wagtail.contrib.forms",
     "wagtail.contrib.typed_table_block",
@@ -223,6 +224,10 @@ if "ELASTICSEARCH_URL" in os.environ:
         backend = "wagtail.search.backends.elasticsearch8"
     elif os.environ.get("ELASTICSEARCH_VERSION") == "7":
         backend = "wagtail.search.backends.elasticsearch7"
+    elif os.environ.get("ELASTICSEARCH_VERSION") == "6":
+        backend = "wagtail.search.backends.elasticsearch6"
+    elif os.environ.get("ELASTICSEARCH_VERSION") == "5":
+        backend = "wagtail.search.backends.elasticsearch5"
 
     WAGTAILSEARCH_BACKENDS["elasticsearch"] = {
         "BACKEND": backend,

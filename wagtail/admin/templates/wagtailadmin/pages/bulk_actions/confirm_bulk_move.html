@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block header %}
-    {% include "wagtailadmin/shared/header.html" with title=_("Move") icon="doc-empty-inverse" %}
+    {% trans "Move" as move_str %}
+    {% include "wagtailadmin/shared/header.html" with title=move_str icon="doc-empty-inverse" %}
 {% endblock header %}
 
 {% block items_with_access %}

@@ -22,8 +22,6 @@ class WagtailAdminTemplateMixin(TemplateResponseMixin, ContextMixin):
     page_title = ""
     page_subtitle = ""
     header_icon = ""
-    # Breadcrumbs are opt-in until we have a design that can be consistently applied
-    _show_breadcrumbs = False
     breadcrumbs_items = [{"url": reverse_lazy("wagtailadmin_home"), "label": _("Home")}]
     template_name = "wagtailadmin/generic/base.html"
 
@@ -44,9 +42,7 @@ class WagtailAdminTemplateMixin(TemplateResponseMixin, ContextMixin):
         context["page_title"] = self.get_page_title()
         context["page_subtitle"] = self.get_page_subtitle()
         context["header_icon"] = self.get_header_icon()
-        context["breadcrumbs_items"] = None
-        if self._show_breadcrumbs:
-            context["breadcrumbs_items"] = self.get_breadcrumbs_items()
+        context["breadcrumbs_items"] = self.get_breadcrumbs_items()
         return context
 
     def get_template_names(self):

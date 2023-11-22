@@ -17,6 +17,7 @@ export class RevealController extends Controller<HTMLElement> {
   static classes = [
     'closed',
     'closeIcon',
+    'initial',
     'opened',
     'openedContent',
     'openIcon',
@@ -75,14 +76,18 @@ export class RevealController extends Controller<HTMLElement> {
 
     new Promise((resolve) => {
       setTimeout(resolve);
-    }).then(() => {
-      this.dispatch('ready', {
-        cancelable: false,
-        detail: {
-          closed: this.closedValue,
-        },
+    })
+      .then(() => {
+        this.element.classList.remove(...this.initialClasses);
+      })
+      .then(() => {
+        this.dispatch('ready', {
+          cancelable: false,
+          detail: {
+            closed: this.closedValue,
+          },
+        });
       });
-    });
   }
 
   closedValueChanged(shouldClose: boolean, previouslyClosed?: boolean) {

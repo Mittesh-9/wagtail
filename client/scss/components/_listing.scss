@@ -63,7 +63,7 @@ ul.listing {
       border: 0;
     }
 
-    th a.label {
+    th a {
       text-decoration: none;
       color: inherit;
       position: relative;
@@ -96,10 +96,14 @@ ul.listing {
     border-bottom: 1px dashed theme('colors.border-field-default');
 
     tr {
-      border-top: 1px dashed theme('colors.border-furniture');
+      border-top: 1px dashed theme('colors.border-field-default');
 
       &:first-child {
-        border-top: 1px dashed theme('colors.border-furniture');
+        border-top: 1px dashed theme('colors.border-field-default');
+      }
+
+      &:hover {
+        background-color: theme('colors.white-10');
       }
     }
 
@@ -419,7 +423,7 @@ table.listing {
       font-weight: theme('fontWeight.extrabold');
 
       @include media-breakpoint-up(md) {
-        font-size: theme('fontSize.22');
+        font-size: theme('fontSize.30');
       }
     }
   }

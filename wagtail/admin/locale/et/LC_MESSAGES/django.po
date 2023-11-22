@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wagtail\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-19 23:14+0100\n"
+"POT-Creation-Date: 2023-07-18 15:24+0100\n"
 "PO-Revision-Date: 2014-02-21 15:50+0000\n"
 "Last-Translator: Ragnar Rebase <rrebase@gmail.com>, 2020\n"
 "Language-Team: Estonian (http://app.transifex.com/torchbox/wagtail/language/"
@@ -96,10 +96,6 @@ msgstr "Laadige üles profiilipilt"
 
 msgid "Enter password"
 msgstr "Sisestage parool"
-
-#, python-format
-msgid "Your %(username_field)s and password didn't match. Please try again."
-msgstr "Teie %(username_field)s ja parool ei klappinud. Palun proovi uuesti."
 
 #, python-format
 msgid "Enter your %(username_field_name)s"
@@ -418,9 +414,6 @@ msgstr "Ei, ärge avaldamist tühistage"
 msgid "Cancel"
 msgstr "Tühista"
 
-msgid "No log entries found."
-msgstr "Logikirjeid ei leitud."
-
 msgid "Update"
 msgstr "Uuenda"
 
@@ -459,9 +452,6 @@ msgstr "Lukustatud kell"
 
 msgid "Edit this page"
 msgstr "Muutke seda lehte"
-
-msgid "Actions"
-msgstr "Toimingud"
 
 msgid "Unlock"
 msgstr "Ava"
@@ -523,17 +513,15 @@ msgstr "Teie ülevaatuse ootamine"
 msgid "Tasks"
 msgstr "Ülesanded"
 
-msgid "Compare with live version"
-msgstr "Võrdle reaalajas versiooniga"
-
-msgid "Compare with previous version"
-msgstr "Võrdle eelmise versiooniga"
-
 msgid "Sign in"
 msgstr "Logi sisse"
 
 msgid "Sign in to Wagtail"
 msgstr "Logige sisse Wagtailisse"
+
+#, python-format
+msgid "Your %(username_field)s and password didn't match. Please try again."
+msgstr "Teie %(username_field)s ja parool ei klappinud. Palun proovi uuesti."
 
 msgid "Signing in…"
 msgstr "Sisselogimine ..."
@@ -758,6 +746,9 @@ msgstr "Kopeeri see leht"
 msgid "New %(page_type)s"
 msgstr "Uus  %(page_type)s"
 
+msgid "Actions"
+msgstr "Toimingud"
+
 msgid "This page has unsaved changes."
 msgstr "Sellel lehel on salvestamata muudatusi."
 
@@ -786,6 +777,9 @@ msgstr "Reaalajas versioon"
 
 msgid "Current draft"
 msgstr "Praegune mustand"
+
+msgid "No log entries found."
+msgstr "Logikirjeid ei leitud."
 
 #, python-format
 msgid "Exploring %(title)s"
@@ -835,11 +829,14 @@ msgstr "See leht on avalike vaadete eest kaitstud"
 msgid "Confirm"
 msgstr "Kinnitage"
 
-msgid "Add child page"
-msgstr "Lapse lisamine"
+msgid "History"
+msgstr "Ajalugu"
 
 msgid "Review this version"
 msgstr "Vaadake see versioon üle"
+
+msgid "Compare with previous version"
+msgstr "Võrdle eelmise versiooniga"
 
 msgid "Compare with current version"
 msgstr "Võrdle praeguse versiooniga"
@@ -919,6 +916,9 @@ msgstr "Leht %(page_num)s lehtedest %(total_pages)s."
 msgid "Breadcrumb"
 msgstr "Riivsai"
 
+msgid "Root"
+msgstr "Juur"
+
 msgid "Download XLSX"
 msgstr "Laadige alla XLSX"
 
@@ -930,12 +930,6 @@ msgstr "Filtreeri"
 
 msgid "Apply filters"
 msgstr "Rakenda filtrid"
-
-msgid "History"
-msgstr "Ajalugu"
-
-msgid "Root"
-msgstr "Juur"
 
 msgid "Current page status:"
 msgstr "Lehe praegune olek:"
@@ -1190,6 +1184,9 @@ msgstr "Avaldatud"
 msgid "See full history"
 msgstr "Vaadake kogu ajalugu"
 
+msgid "Compare with live version"
+msgstr "Võrdle reaalajas versiooniga"
+
 msgid "More"
 msgstr "Veel"
 
@@ -1255,9 +1252,6 @@ msgstr "Kogu '%(object)s' on kustutatud."
 msgid "Are you sure you want to delete this collection?"
 msgstr "Kas olete kindel, et soovite selle kogu kustutada?"
 
-msgid "Home"
-msgstr "Kodu"
-
 msgid "Workflow progress"
 msgstr "Töövoo edenemine"
 
@@ -1268,13 +1262,6 @@ msgstr "%(model_name)s '%(object)s' on värskendatud."
 #, python-format
 msgid "%(model_name)s '%(object)s' created."
 msgstr "%(model_name)s '%(object)s' on loodud."
-
-#, python-format
-msgid "Edit '%(title)s'"
-msgstr "Redigeeri '%(title)s'"
-
-msgid "Inspect"
-msgstr "Kontrollige"
 
 msgid "Editing"
 msgstr "Redigeerimine"
@@ -1554,12 +1541,23 @@ msgid "Pages"
 msgstr "Lehed"
 
 #, python-format
+msgid "Edit '%(title)s'"
+msgstr "Redigeeri '%(title)s'"
+
+#, python-format
 msgid "Preview draft version of '%(title)s'"
 msgstr "„%(title)s” mustandi versiooni eelvaade"
 
 #, python-format
 msgid "View live version of '%(title)s'"
 msgstr "Kuva reaalajas versioon '%(title)s'"
+
+msgid "Add child page"
+msgstr "Lapse lisamine"
+
+#, python-format
+msgid "Add a child page to '%(title)s' "
+msgstr "Lisage alamleht lehele %(title)s"
 
 #, python-format
 msgid "Move page '%(title)s'"

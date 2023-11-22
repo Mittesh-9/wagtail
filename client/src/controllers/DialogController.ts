@@ -21,13 +21,11 @@ export class DialogController extends Controller<HTMLElement> {
     theme: { default: '', type: String },
   };
 
-  static targets = ['body', 'notify'];
+  static targets = ['body'];
 
   declare dialog: A11yDialog;
   declare readonly bodyTarget: HTMLElement;
   declare readonly themeValue: string;
-  /** Optional targets that will be dispatched events for key dialog events. */
-  declare readonly notifyTargets: HTMLElement[];
 
   connect() {
     this.dialog = new A11yDialog(this.element);
@@ -36,32 +34,13 @@ export class DialogController extends Controller<HTMLElement> {
     this.dialog
       .on('show', () => {
         if (!isFloating) document.documentElement.style.overflowY = 'hidden';
-        this.dispatch('shown', { detail, cancelable: false });
-        this.notifyTargets.forEach((target) => {
-          this.dispatch('shown', {
-            target,
-            bubbles: false,
-            cancelable: false,
-          });
-        });
+        this.dispatch('shown', { detail });
       })
       .on('hide', () => {
         if (!isFloating) document.documentElement.style.overflowY = '';
-        this.dispatch('hidden', { detail, cancelable: false });
-        this.notifyTargets.forEach((target) => {
-          this.dispatch('hidden', {
-            target,
-            bubbles: false,
-            cancelable: false,
-          });
-        });
+        this.dispatch('hidden', { detail });
       });
     this.dispatch('ready', { detail });
-    if (this.notifyTargets && Array.isArray(this.notifyTargets)) {
-      this.notifyTargets.forEach((target) => {
-        this.dispatch('ready', { target, bubbles: false, cancelable: false });
-      });
-    }
     return this.dialog;
   }
 

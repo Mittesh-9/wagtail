@@ -14,7 +14,7 @@ from wagtail.admin.views import generic
 from wagtail.admin.views.generic import history, usage
 from wagtail.models import ReferenceIndex
 from wagtail.permissions import ModelPermissionPolicy
-from wagtail.utils.deprecation import RemovedInWagtail70Warning
+from wagtail.utils.deprecation import RemovedInWagtail60Warning
 
 from .base import ViewSet, ViewSetGroup
 
@@ -25,8 +25,6 @@ class ModelViewSet(ViewSet):
 
     All attributes and methods from :class:`~wagtail.admin.viewsets.base.ViewSet`
     are available.
-
-    For more information on how to use this class, see :ref:`generic_views`.
     """
 
     #: Register the model to the reference index to track its usage.
@@ -53,9 +51,6 @@ class ModelViewSet(ViewSet):
 
     #: The view class to use for the inspect view; must be a subclass of ``wagtail.admin.views.generic.InspectView``.
     inspect_view_class = generic.InspectView
-
-    # Breadcrumbs can be turned off until we have a design that can be consistently applied
-    _show_breadcrumbs = True
 
     #: The prefix of template names to look for when rendering the admin views.
     template_prefix = ""
@@ -124,7 +119,6 @@ class ModelViewSet(ViewSet):
                 "edit_url_name": self.get_url_name("edit"),
                 "delete_url_name": self.get_url_name("delete"),
                 "header_icon": self.icon,
-                "_show_breadcrumbs": self._show_breadcrumbs,
                 **kwargs,
             }
         )
@@ -227,7 +221,7 @@ class ModelViewSet(ViewSet):
                     "deprecated in favour of /edit/<pk>/."
                 )
                 % (self.__class__.__name__),
-                category=RemovedInWagtail70Warning,
+                category=RemovedInWagtail60Warning,
             )
             return redirect(self.get_url_name("edit"), pk, permanent=True)
 
@@ -242,7 +236,7 @@ class ModelViewSet(ViewSet):
                     "deprecated in favour of /delete/<pk>/."
                 )
                 % (self.__class__.__name__),
-                category=RemovedInWagtail70Warning,
+                category=RemovedInWagtail60Warning,
             )
             return redirect(self.get_url_name("delete"), pk, permanent=True)
 
@@ -569,14 +563,14 @@ class ModelViewSet(ViewSet):
                 path("inspect/<str:pk>/", self.inspect_view, name="inspect")
             )
 
-        # RemovedInWagtail70Warning: Remove legacy URL patterns
+        # RemovedInWagtail60Warning: Remove legacy URL patterns
         urlpatterns += self._legacy_urlpatterns
 
         return urlpatterns
 
     @cached_property
     def _legacy_urlpatterns(self):
-        # RemovedInWagtail70Warning: Remove legacy URL patterns
+        # RemovedInWagtail60Warning: Remove legacy URL patterns
         return [
             path("<int:pk>/", self.redirect_to_edit_view),
             path("<int:pk>/delete/", self.redirect_to_delete_view),

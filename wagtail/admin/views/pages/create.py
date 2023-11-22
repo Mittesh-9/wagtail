@@ -390,7 +390,6 @@ class CreateView(TemplateResponseMixin, ContextMixin, HookResponseMixin, View):
                 "form": self.form,
                 "next": self.next_url,
                 "has_unsaved_changes": self.has_unsaved_changes,
-                "locale": self.locale,
                 "media": media,
             }
         )
@@ -414,8 +413,7 @@ class CreateView(TemplateResponseMixin, ContextMixin, HookResponseMixin, View):
                     + "?"
                     + urlencode({"locale": locale.language_code}),
                 }
-                # Do not show the switcher for the current locale
-                for locale in Locale.objects.exclude(pk=self.locale.pk)
+                for locale in Locale.objects.all()
             ]
 
         else:
